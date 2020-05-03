@@ -18,8 +18,9 @@ setup(
     python_requires='>=3.5.0',
     url='http://github.com/zhiqingxiao/boardgame2/',
     packages=find_packages(),
-    install_requires=['six', 'numpy', 'gym',],
+    install_requires=['six', 'numpy', 'gym'],
     extras_require={},
+    test_require=['pytest',],
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',

@@ -3,14 +3,17 @@ boardgame2
 
 `boardgame2` is an extension of OpenAI Gym that implements multiple two-player zero-sum 2-dimension board games, such as TicTacToe, Gomuko, and Reversi.
 
+
 ## Environments
 - `Reversi-v0`
 - `KInARow-v0`, as well as `Gomuku-v0` and `TicTacToe-v0`
-- `Go-v0` (Experimental, end-game not fully implemented)
+- `Go-v0` (Experimental, not fully implemented)
 
 ## Install
 
     pip install --upgrade boardgame2
+
+We support Windows, macOS, Linux, and other operating systems.
 
 
 ## Usage
@@ -61,5 +64,6 @@ This package has been published in the following book:
      title     = {Reinforcement Learning: Theory and {Python} Implementation},
      author    = {Zhiqing Xiao}
      year      = 2019,
+     month     = 8,
      publisher = {China Machine Press},
     }

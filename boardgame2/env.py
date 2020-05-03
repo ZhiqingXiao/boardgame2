@@ -1,6 +1,5 @@
 import sys
 import copy
-import itertools
 
 from six import StringIO
 import numpy as np
@@ -111,22 +110,19 @@ class BoardGameEnv(gym.Env):
         
         if isinstance(board_shape, int):
             board_shape = (board_shape, board_shape)
-        assert len(board_shape) == 2 # invalid board shape
+        assert len(board_shape) == 2  # invalid board shape
         self.board = np.zeros(board_shape)
-        assert self.board.size > 1 # Invalid board shape
+        assert self.board.size > 1  # Invalid board shape
         
         observation_spaces = [
                 spaces.Box(low=-1, high=1, shape=board_shape, dtype=np.int8),
                 spaces.Box(low=-1, high=1, shape=(), dtype=np.int8)]
         self.observation_space = spaces.Tuple(observation_spaces)
-        action_spaces = [spaces.Box(low=-np.ones((2,)),
-                high=np.array(board_shape)-1, dtype=np.int8),]
-        self.action_space = spaces.Tuple(action_spaces)
-    
+        self.action_space = spaces.Box(low=-np.ones((2,)),
+                high=np.array(board_shape)-1, dtype=np.int8)
     
     def seed(self, seed=None):
         return []
-    
     
     def reset(self):
         """
@@ -139,7 +135,6 @@ class BoardGameEnv(gym.Env):
         self.board = np.zeros_like(self.board, dtype=np.int8)
         self.player = BLACK
         return self.board, self.player
-    
     
     def is_valid(self, state, action):
         """
@@ -160,7 +155,6 @@ class BoardGameEnv(gym.Env):
         x, y = action
         return board[x, y] == EMPTY
     
-    
     def get_valid(self, state):
         """
         Get all valid locations for the current state.
@@ -180,7 +174,6 @@ class BoardGameEnv(gym.Env):
                 valid[x, y] = self.is_valid(state, np.array([x, y]))
         return valid
     
-    
     def has_valid(self, state):
         """
         Check whether there are valid locations for current state.
@@ -194,13 +187,11 @@ class BoardGameEnv(gym.Env):
         has_valid : bool
         """
         board = state[0]
-        valid = np.zeros_like(board, dtype=np.int8)
         for x in range(board.shape[0]):
             for y in range(board.shape[1]):
                 if self.is_valid(state, np.array([x, y])):
                     return True
         return False
-    
     
     def get_winner(self, state):
         """
@@ -223,7 +214,6 @@ class BoardGameEnv(gym.Env):
             if self.has_valid((board, player)):
                 return None
         return np.sign(np.nansum(board))
-    
     
     def get_next_state(self, state, action):
         """
@@ -248,7 +238,6 @@ class BoardGameEnv(gym.Env):
             board = copy.deepcopy(board)
             board[x, y] = player
         return board, -player
-    
     
     def next_step(self, state, action):
         """
@@ -280,7 +269,6 @@ class BoardGameEnv(gym.Env):
             action = self.PASS
         return state, 0., False, {}
     
-    
     def step(self, action):
         """
         See gym.Env.step().
@@ -300,7 +288,6 @@ class BoardGameEnv(gym.Env):
         next_state, reward, done, info = self.next_step(state, action)
         self.board, self.player = next_state
         return next_state, reward, done, info
-    
     
     def render(self, mode='human'):
         """

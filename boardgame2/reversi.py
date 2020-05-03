@@ -1,8 +1,6 @@
 import copy
 import itertools
 
-import numpy as np
-
 from .env import EMPTY
 from .env import BoardGameEnv
 from .env import is_index
@@ -13,8 +11,7 @@ class ReversiEnv(BoardGameEnv):
     def __init__(self, board_shape=8, render_characters='+ox'):
         super().__init__(board_shape=board_shape,
             illegal_action_mode='resign', render_characters=render_characters,
-            allow_pass=False) # reversi does not allow pass
-    
+            allow_pass=False)  # reversi does not allow pass
     
     def reset(self):
         super().reset()
@@ -24,7 +21,6 @@ class ReversiEnv(BoardGameEnv):
         self.board[x - 1][y] = self.board[x][y - 1] = -1
         
         return self.board, self.player
-    
     
     def is_valid(self, state, action):
         """
@@ -46,7 +42,7 @@ class ReversiEnv(BoardGameEnv):
         if board[x, y] != EMPTY:
             return False
         
-        for dx in [-1, 0, 1]: # loop on the 8 directions
+        for dx in [-1, 0, 1]:  # loop on the 8 directions
             for dy in [-1, 0, 1]:
                 if (dx, dy) == (0, 0):
                     continue
@@ -59,11 +55,10 @@ class ReversiEnv(BoardGameEnv):
                         break
                     if board[xx, yy] == -player:
                         continue
-                    if count: # and is player
+                    if count:  # and is player
                         return True
                     break
         return False
-    
     
     def get_next_state(self, state, action):
         """
@@ -80,7 +75,7 @@ class ReversiEnv(BoardGameEnv):
         if self.is_valid(state, action):
             x, y = action
             board[x, y] = player
-            for dx in [-1, 0, 1]: # loop on the 8 directions
+            for dx in [-1, 0, 1]:  # loop on the 8 directions
                 for dy in [-1, 0, 1]:
                     if (dx, dy) == (0, 0):
                         continue
@@ -92,7 +87,7 @@ class ReversiEnv(BoardGameEnv):
                         if board[xx, yy] == EMPTY:
                             break
                         if board[xx, yy] == player:
-                            for i in range(count+1): # overwrite
+                            for i in range(count+1):  # overwrite
                                 board[x + i * dx, y + i * dy] = player
                             break
         return board, -player
