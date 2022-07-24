@@ -6,19 +6,20 @@ from .env import is_index
 
 
 class KInARowEnv(BoardGameEnv):
-    def __init__(self, board_shape=3, target_length=3,
-            illegal_action_mode='pass', render_characters='+ox'):
+
+    def __init__(self, board_shape=3, target_length: int=3,
+            illegal_action_mode: str='pass', render_characters: str='+ox'):
         super().__init__(board_shape=board_shape,
                 illegal_action_mode=illegal_action_mode,
                 render_characters=render_characters)
         self.target_length = target_length
-    
+
     def get_winner(self, state):
         """
         Parameters
         ----
         state : (np.array, int)   board and player. player info is not used
-        
+
         Returns
         ----
         winner : None or int

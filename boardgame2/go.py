@@ -9,7 +9,7 @@ from .env import is_index
 
 
 class GoJudger:
-    
+
     def __init__(self, komi):
         """
         Parameters
@@ -17,37 +17,37 @@ class GoJudger:
         komi : int or float     the Komi defined by the rule of the game
         """
         self.komi = komi
-    
-    def __call__(self, board):
+
+    def __call__(self, board: np.array):
         """
         Parameters
         ----
         board : np.array
-        
+
         Returns
         ----
         winner : BLACK or WHITE
         """
         self.board = board
-        
+
         self.remove_dead()
-        
+
         # floodfill for both player
         self.fill = np.zeros(board.shape + (3,), dtype=int)
         for x in range(board.shape[0]):
             for y in range(board.shape[1]):
                 self.floodfill((x, y), board[x, y])
-        
+
         count_black = np.nansum(self.fill[:, :, BLACK] > self.fill[:, :, WHITE])
         count_white = np.nansum(self.fill[:, :, WHITE] > self.fill[:, :, BLACK])
         if count_black > count_white + self.komi:
             return BLACK
         return WHITE
-    
+
     def remove_dead(self):
         # TODO: The implmentation of dead stone removal is difficult.
         print('The dead stone removal is not implemented. All stones will be treated as live ones.')
-    
+
     def floodfill(self, location, player):
         x, y = location
         if not self.fill[x, y, player]:
@@ -59,8 +59,8 @@ class GoJudger:
 
 
 class GoEnv(BoardGameEnv):
-    def __init__(self, board_shape=19, komi=0, allow_suicide=False,
-            illegal_action_mode='pass', render_characters='+ox'):
+    def __init__(self, board_shape=19, komi=0, allow_suicide: bool=False,
+            illegal_action_mode: str='pass', render_characters: str='+ox'):
         super().__init__(board_shape=board_shape,
                 illegal_action_mode=illegal_action_mode,
                 render_characters=render_characters)
@@ -71,40 +71,44 @@ class GoEnv(BoardGameEnv):
         pass_space = spaces.Discrete(2)
         self.observation_space = spaces.Tuple(obs_space.spaces + [ko_space, pass_space])
         print('Go is not fully implemented. Please use it at your own risk.')
-    
-    def reset(self):
+
+    def reset(self, *, seed=None, return_info=False, options=None):
         self.board = np.zeros_like(self.board, dtype=np.int8)
         self.player = BLACK
         self.ko = np.zeros_like(self.board, dtype=np.int8)
         self.pas = False  # record pass
-        return self.board, self.player, self.ko, self.pas
-    
-    def is_valid(self, state, action):
+        next_state = (self.board, self.player, self.ko, self.pas)
+        if return_info:
+            return next_state, {}
+        else:
+            return next_state
+
+    def is_valid(self, state, action) -> bool:
         """
         Parameters
         ----
         state : (np.array, int, np.array, int)    board, player, ko, pass
         action : np.array   location
-        
+
         Returns
         ----
-        valid : book
+        valid : bool
         """
         board, _, ko, _ = state
-        
+
         if is_index(board, action):
             return False
-        
+
         if len(action) == 1:
             action, = action
         x, y = action.tolist()
-        
+
         if board[x, y] or ko[x, y]:
             return False
-        
+
         if not self.allow_suicide:
             board[x, y] = self.player  # place
-            
+
             for dx, dy in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
                 xx, yy = x + dx, y + dy
                 if is_index(board, (xx, yy)):
@@ -112,19 +116,19 @@ class GoEnv(BoardGameEnv):
                         _, liberties = self.search(board, (xx, yy), max_liberty=1)
                         if not liberties:
                             return True
-            
+
             _, my_liberties = self.search(board, (x, y), max_liberty=1)
             if not my_liberties:
                 return False
-        
+
         return True
-    
+
     def get_winner(self, state):
         """
         Parameters
         ----
         state : (np.array, int, np.array, int)    board, player, ko, pass
-        
+
         Returns
         ----
         winner : None or int
@@ -138,7 +142,7 @@ class GoEnv(BoardGameEnv):
             return winner
         else:
             return None
-    
+
     def search(self, board, location, max_liberty=float('+inf'), max_stone=float('+inf')):
         # BFS
         x0, y0 = location
@@ -162,30 +166,30 @@ class GoEnv(BoardGameEnv):
                         if len(liberties) >= max_liberty:
                             return locations, liberties
         return locations, liberties
-    
+
     def get_next_state(self, state, action):
         """
         Parameters
         ----
         state : (np.array, int, np.array, int)        board, player, ko, pass
         action : np.array    location
-        
+
         Returns
         ----
-        next_state : (np.array, int)    next board and next player
+        next_state : (np.array, int)    next board and next player, next_ko, next_pass
         """
         board, player, _, _ = state
         location = action
-        
+
         ko, pas = np.zeros_like(board), True
         if self.is_valid(state, action):
             pas = False
-            
+
             x, y = location
             board[x, y] = player  # place
-            
+
             suicides, my_liberties = self.search(board, (x, y), max_liberty=1)
-            
+
             delete_count = 0
             for dx, dy in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
                 xx, yy = x + dx, y + dy
@@ -198,23 +202,23 @@ class GoEnv(BoardGameEnv):
                                 board[x_del, y_del] = 0
                             if delete_count == 1:
                                 ko[x_del, y_del] = 1
-            
+
             if not my_liberties:
                 if delete_count != 1 and len(suicides) != 1:
                     ko = np.zeros_like(board)
-                    
+      
                 if self.allow_suicide:
                     for x_del, y_del in suicides:
                         board[x_del, y_del] = 0
-            
+
         return board, -player, ko, pas
-    
+
     def step(self, action):
         """
         Parameters
         ----
         action : np.array    location
-        
+
         Returns
         ----
         next_state : (np.array, int, np.array, bool)    next board and next player
@@ -225,12 +229,12 @@ class GoEnv(BoardGameEnv):
         state = (self.board, self.player, self.ko, self.pas)
         if not self.is_valid(state, action):
             action = self.illegal_equivalent_action
-        
+
         if np.array_equal(action, self.RESIGN):
             self.player = -self.player
             next_state = self.board, self.player, np.zeros_like(self.board), False
             return next_state, self.player, True, {}
-        
+
         self.board, self.player, self.ko, self.pas = self.get_next_state(
                 (self.board, self.player, self.ko, self.pas), action)
         while True:

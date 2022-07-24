@@ -6,16 +6,16 @@ import boardgame2
 
 
 def test_reversi():
-    env = gym.make('Reversi-v0')
+    env = gym.make('Reversi-v0', new_step_api=True)
     assert env.observation_space[0].shape == (8, 8)
     assert env.observation_space[1].shape == ()
     assert env.action_space.shape == (2,)
     assert np.all(env.action_space.high == [7, 7])
-    
+
     observation = env.reset()
     while True:
         action = env.action_space.sample()
-        observation, reward, done, info = env.step(action)
-        if done:
+        observation, reward, termination, truncation, info = env.step(action)
+        if termination or truncation:
             break
     env.close()

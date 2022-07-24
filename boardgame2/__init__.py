@@ -3,7 +3,6 @@ from .env import *
 from .reversi import *
 from .kinarow import *
 from .go import *
-from .version import *
 
 
 register(
