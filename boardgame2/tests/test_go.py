@@ -12,7 +12,7 @@ def test_go():
     assert env.action_space.shape == (2,)
     assert np.all(env.action_space.high == [18, 18])
 
-    observation = env.reset()
+    observation, info = env.reset()
     while False:  # We do not test it, since it has not been fully implemented.
         action = env.action_space.sample()
         observation, reward, termination, truncation, info = env.step(action)

@@ -13,7 +13,7 @@ class ReversiEnv(BoardGameEnv):
             illegal_action_mode='resign', render_characters=render_characters,
             allow_pass=False)  # reversi does not allow pass
 
-    def reset(self, *, seed=None, return_info=False, options=None):
+    def reset(self, *, seed=None, return_info=True, options=None):
         super().reset(seed=seed, return_info=return_info, options=options)
 
         x, y = (s // 2 for s in self.board.shape)

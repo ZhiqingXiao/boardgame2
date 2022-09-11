@@ -124,7 +124,7 @@ class BoardGameEnv(gym.Env):
         self.action_space = spaces.Box(low=-np.ones((2,)),
                 high=np.array(board_shape)-1, dtype=np.int8)
 
-    def reset(self, *, seed=None, return_info=False, options=None):
+    def reset(self, *, seed=None, return_info=True, options=None):
         """Reset a new game episode. See gym.Env.reset()
 
         Parameters

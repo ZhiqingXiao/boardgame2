@@ -12,7 +12,7 @@ def test_reversi():
     assert env.action_space.shape == (2,)
     assert np.all(env.action_space.high == [7, 7])
 
-    observation = env.reset()
+    observation, info = env.reset()
     while True:
         action = env.action_space.sample()
         observation, reward, termination, truncation, info = env.step(action)

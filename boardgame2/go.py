@@ -72,7 +72,7 @@ class GoEnv(BoardGameEnv):
         self.observation_space = spaces.Tuple(obs_space.spaces + [ko_space, pass_space])
         print('Go is not fully implemented. Please use it at your own risk.')
 
-    def reset(self, *, seed=None, return_info=False, options=None):
+    def reset(self, *, seed=None, return_info=True, options=None):
         self.board = np.zeros_like(self.board, dtype=np.int8)
         self.player = BLACK
         self.ko = np.zeros_like(self.board, dtype=np.int8)

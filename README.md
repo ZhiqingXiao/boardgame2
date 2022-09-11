@@ -47,11 +47,11 @@ env = gym.make('TicTacToe-v0')
 print('observation space = {}'.format(env.observation_space))
 print('action space = {}'.format(env.action_space))
 
-observation = env.reset()
+observation, info = env.reset()
 while True:
     action = env.action_space.sample()
-    observation, reward, done, info = env.step(action)
-    if done:
+    observation, reward, termination, truncation, info = env.step(action)
+    if termination or truncation:
         break
 env.close()
 ```

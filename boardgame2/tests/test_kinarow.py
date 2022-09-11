@@ -12,7 +12,7 @@ def test_tictactoe():
     assert env.action_space.shape == (2,)
     assert np.all(env.action_space.high == [2, 2])
 
-    observation = env.reset()
+    observation, info = env.reset()
     while True:
         action = env.action_space.sample()
         observation, reward, termination, truncation, info = env.step(action)
@@ -28,7 +28,7 @@ def test_gomuku():
     assert env.action_space.shape == (2,)
     assert np.all(env.action_space.high == [14, 14])
 
-    observation = env.reset()
+    observation, info = env.reset()
     while True:
         action = env.action_space.sample()
         observation, reward, termination, truncation, info = env.step(action)
